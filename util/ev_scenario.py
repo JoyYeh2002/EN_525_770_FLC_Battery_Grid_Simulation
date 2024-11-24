@@ -1,5 +1,5 @@
 # Import the EV_group class from ev_config
-from ev_group import EV_group
+from util.ev_group import EV_group
 
 # Initialize an object of the EV_group class
 class EV_scenario:
