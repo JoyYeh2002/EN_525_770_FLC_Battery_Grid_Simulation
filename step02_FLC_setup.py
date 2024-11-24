@@ -50,9 +50,6 @@ class FLC_voltage:
         plt.grid(True)
         plt.show()
 
-# Example usage
-flc_voltage = FLC_voltage()
-# flc_voltage.plot_membership_functions()
 
 class FLC_SOC:
     def __init__(self):
@@ -83,102 +80,98 @@ class FLC_SOC:
         plt.grid(True)
         plt.show()
 
+# Generate an array from -1 to 1 with increments of 2/9
+N_energy_categories = 10
+increment = 2 / (N_energy_categories - 1)
+arr = np.arange(-1, 1+increment-1e-8, increment)
+# [-1.         -0.77777778 -0.55555556 
+# -0.33333333 -0.11111111  0.11111111
+#   0.33333333  0.55555556  0.77777778  
+# 1.          1.22222222]
+
+class FLC_energy_csc:
+    def __init__(self):
+        self.membership_functions = [
+            triangularMF("Very Negative High (VNH)", [(-1.1, 1), (-1, 1), (arr[1], 0)]),
+            triangularMF("Negative High (NH)", [(-1, 0), (arr[1], 1), (arr[2], 0)]),
+            triangularMF("Negative Medium (NM)", [(arr[1], 0), (arr[2], 1), (arr[3], 0)]),
+            triangularMF("Negative Low (NL)", [(arr[2], 0), (arr[3], 1), (arr[4], 0)]),
+            triangularMF("Very Negative Low (VNL)", [(arr[3], 0), (arr[4], 1), (arr[5], 0)]),
+            triangularMF("Very Positive Low (VPL)", [(arr[4], 0), (arr[5], 1), (arr[6], 0)]),
+            triangularMF("Positive Low (PL)", [(arr[5], 0), (arr[6], 1), (arr[7], 0)]),
+            triangularMF("Positive Medium (PM)", [(arr[6], 0), (arr[7], 1), (arr[8], 0)]),
+            triangularMF("Positive High (PH)", [(arr[7], 0), (arr[8], 1), (arr[9], 0)]),
+            triangularMF("Very Positive High (VPH)", [(arr[8], 0), (arr[9], 1), (1.1, 1)])
+        ]
+    
+    def plot_membership_functions(self):
+        # Generate x values for plotting
+        x_values = np.linspace(-1.1, 1.1, 500)
+
+        # Compute and plot membership functions
+        plt.figure(figsize=(10, 6))
+
+        for mf in self.membership_functions:
+            y_values = mf.compute_membership(x_values)
+            plt.plot(x_values, y_values, label=mf.name, linewidth=2)
+
+        # Plot formatting
+        plt.title("Fuzzy Membership Functions for Energy", fontsize=14)
+        plt.xlabel("Energy Level", fontsize=14)
+        plt.ylabel("Membership Degree", fontsize=14)
+        plt.legend(fontsize=9)
+        plt.grid(True)
+        plt.show()
+
+
+# Generate an array from -1 to 1 with increments of 2/9
+N_energy_categories = 12
+increment = 2 / (N_energy_categories - 1)
+arr = np.arange(-1, 1+increment-1e-8, increment)
+
+
+class FLC_energy_v2g:
+    def __init__(self):
+        self.membership_functions = [
+            triangularMF("Very Negative High (VNH)", [(-1.1, 1), (-1, 1), (arr[1], 0)]),
+            triangularMF("Negative High (NH)", [(-1, 0), (arr[1], 1), (arr[2], 0)]),
+            triangularMF("Negative Medium (NM)", [(arr[1], 0), (arr[2], 1), (arr[3], 0)]),
+            triangularMF("Very Negative Medium (VNM)", [(arr[2], 0), (arr[3], 1), (arr[4], 0)]),
+            triangularMF("Negative Low (NL)", [(arr[3], 0), (arr[4], 1), (arr[5], 0)]),
+            triangularMF("Very Negative Low (VNL)", [(arr[4], 0), (arr[5], 1), (arr[6], 0)]),
+            triangularMF("Very Positive Low (VPL)", [(arr[5], 0), (arr[6], 1), (arr[7], 0)]),
+            triangularMF("Positive Low (PL)", [(arr[6], 0), (arr[7], 1), (arr[8], 0)]),
+            triangularMF("Positive Medium (PM)", [(arr[7], 0), (arr[8], 1), (arr[9], 0)]),
+            triangularMF("Very Positive Medium (VPM)", [(arr[8], 0), (arr[9], 1), (arr[10], 0)]),
+            triangularMF("Positive High (PH)", [(arr[9], 0), (arr[10], 1), (arr[11], 0)]),
+            triangularMF("Very Positive High (VPH)", [(arr[10], 0), (arr[11], 1), (1.1, 1)])
+        ]
+    def plot_membership_functions(self):
+        # Generate x values for plotting
+        x_values = np.linspace(-1.1, 1.1, 500)
+
+        # Compute and plot membership functions
+        plt.figure(figsize=(10, 6))
+
+        for mf in self.membership_functions:
+            y_values = mf.compute_membership(x_values)
+            plt.plot(x_values, y_values, label=mf.name, linewidth=2)
+
+        # Plot formatting
+        plt.title("Fuzzy Membership Functions for Energy Output (V2G)", fontsize=14)
+        plt.xlabel("Energy Level", fontsize=14)
+        plt.ylabel("Membership Degree", fontsize=14)
+        plt.legend(fontsize=9)
+        plt.grid(True)
+        plt.show()
+
 # Example usage
+flc_voltage = FLC_voltage()
 flc_SOC = FLC_SOC()
-flc_SOC.plot_membership_functions()
+flc_energy_csc = FLC_energy_csc()
+flc_energy_v2g = FLC_energy_v2g()
 
-
-# Generate an array from -1 to 1 with increments of 2/9
-N_energy_categories = 10
-increment = 2 / (N_energy_categories - 1)
-arr = np.arange(-1, 1+increment-1e-8, increment)
-# [-1.         -0.77777778 -0.55555556 
-# -0.33333333 -0.11111111  0.11111111
-#   0.33333333  0.55555556  0.77777778  
-# 1.          1.22222222]
-
-class FLC_energy:
-    def __init__(self):
-        self.membership_functions = [
-            triangularMF("Very Negative High (VNH)", [(-1.1, 1), (-1, 1), (arr[1], 0)]),
-            triangularMF("Negative High (NH)", [(-1, 0), (arr[1], 1), (arr[2], 0)]),
-            triangularMF("Negative Medium (NM)", [(arr[1], 0), (arr[2], 1), (arr[3], 0)]),
-            triangularMF("Negative Low (NL)", [(arr[2], 0), (arr[3], 1), (arr[4], 0)]),
-            triangularMF("Very Negative Low (VNL)", [(arr[3], 0), (arr[4], 1), (arr[5], 0)]),
-            triangularMF("Very Positive Low (VPL)", [(arr[4], 0), (arr[5], 1), (arr[6], 0)]),
-            triangularMF("Positive Low (PL)", [(arr[5], 0), (arr[6], 1), (arr[7], 0)]),
-            triangularMF("Positive Medium (PM)", [(arr[6], 0), (arr[7], 1), (arr[8], 0)]),
-            triangularMF("Positive High (PH)", [(arr[7], 0), (arr[8], 1), (arr[9], 0)]),
-            triangularMF("Very Positive High (VPH)", [(arr[8], 0), (arr[9], 1), (1.1, 1)])
-        ]
-    
-    def plot_membership_functions(self):
-        # Generate x values for plotting
-        x_values = np.linspace(-1.1, 1.1, 500)
-
-        # Compute and plot membership functions
-        plt.figure(figsize=(10, 6))
-
-        for mf in self.membership_functions:
-            y_values = mf.compute_membership(x_values)
-            plt.plot(x_values, y_values, label=mf.name, linewidth=2)
-
-        # Plot formatting
-        plt.title("Fuzzy Membership Functions for Energy", fontsize=14)
-        plt.xlabel("Energy Level", fontsize=14)
-        plt.ylabel("Membership Degree", fontsize=14)
-        plt.legend(fontsize=9)
-        plt.grid(True)
-        plt.show()
-
-# Example usage
-flc_energy = FLC_energy()
-# flc_energy.plot_membership_functions()
-
-
-# Generate an array from -1 to 1 with increments of 2/9
-N_energy_categories = 10
-increment = 2 / (N_energy_categories - 1)
-arr = np.arange(-1, 1+increment-1e-8, increment)
-# [-1.         -0.77777778 -0.55555556 
-# -0.33333333 -0.11111111  0.11111111
-#   0.33333333  0.55555556  0.77777778  
-# 1.          1.22222222]
-
-class FLC_energy:
-    def __init__(self):
-        self.membership_functions = [
-            triangularMF("Very Negative High (VNH)", [(-1.1, 1), (-1, 1), (arr[1], 0)]),
-            triangularMF("Negative High (NH)", [(-1, 0), (arr[1], 1), (arr[2], 0)]),
-            triangularMF("Negative Medium (NM)", [(arr[1], 0), (arr[2], 1), (arr[3], 0)]),
-            triangularMF("Negative Low (NL)", [(arr[2], 0), (arr[3], 1), (arr[4], 0)]),
-            triangularMF("Very Negative Low (VNL)", [(arr[3], 0), (arr[4], 1), (arr[5], 0)]),
-            triangularMF("Very Positive Low (VPL)", [(arr[4], 0), (arr[5], 1), (arr[6], 0)]),
-            triangularMF("Positive Low (PL)", [(arr[5], 0), (arr[6], 1), (arr[7], 0)]),
-            triangularMF("Positive Medium (PM)", [(arr[6], 0), (arr[7], 1), (arr[8], 0)]),
-            triangularMF("Positive High (PH)", [(arr[7], 0), (arr[8], 1), (arr[9], 0)]),
-            triangularMF("Very Positive High (VPH)", [(arr[8], 0), (arr[9], 1), (1.1, 1)])
-        ]
-    
-    def plot_membership_functions(self):
-        # Generate x values for plotting
-        x_values = np.linspace(-1.1, 1.1, 500)
-
-        # Compute and plot membership functions
-        plt.figure(figsize=(10, 6))
-
-        for mf in self.membership_functions:
-            y_values = mf.compute_membership(x_values)
-            plt.plot(x_values, y_values, label=mf.name, linewidth=2)
-
-        # Plot formatting
-        plt.title("Fuzzy Membership Functions for Energy", fontsize=14)
-        plt.xlabel("Energy Level", fontsize=14)
-        plt.ylabel("Membership Degree", fontsize=14)
-        plt.legend(fontsize=9)
-        plt.grid(True)
-        plt.show()
-
-# Example usage
-flc_energy = FLC_energy()
-# flc_energy.plot_membership_functions()
+# flc_voltage.plot_membership_functions()
+# flc_SOC.plot_membership_functions()
+# flc_energy_csc.plot_membership_functions()
+# flc_energy_v2g.plot_membership_functions()
