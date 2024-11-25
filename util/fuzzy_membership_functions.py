@@ -55,11 +55,11 @@ class FLC_voltage:
 class FLC_SOC:
     def __init__(self):
         self.membership_functions = [
-            triangularMF("VH", [(0, 1), (10, 1), (32.5, 0)]),
-            triangularMF("L", [(10, 0), (32.5, 1), (55, 0)]),
-            triangularMF("M", [(32.5, 0), (55, 1), (77.5, 0)]),
-            triangularMF("H", [(55, 0), (77.5, 1), (100, 0)]),
-            triangularMF("VH", [(77.5, 0), (100, 1), (110, 1)])
+            triangularMF("VL", [(0, 1), (0.1, 1), (0.325, 0)]),
+            triangularMF("L", [(0.1, 0), (0.325, 1), (0.55, 0)]),
+            triangularMF("M", [(0.325, 0), (0.55, 1), (0.775, 0)]),
+            triangularMF("H", [(0.55, 0), (0.775, 1), (1, 0)]),
+            triangularMF("VH", [(0.775, 0), (1, 1), (1.1, 1)])
         ]
 
     def get_membership_function(self, name):
