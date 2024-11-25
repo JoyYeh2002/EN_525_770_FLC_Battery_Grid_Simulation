@@ -41,7 +41,7 @@ if __name__ == "__main__":
     if not os.path.exists("outputs"):
         os.makedirs("outputs")
     # Define grid energy requirement
-    for grid_energy_requirement in [0.7, 0.8, 0.9, 0.92, 0.94, 0.95, 0.98, 0.99, 0.996]: # Example value, adjust as needed
+    for grid_energy_requirement in [0.7, 0.8, 0.9, 0.92, 0.94, 0.95,]: # Example value, adjust as needed
         time_steps = 100  # Number of time steps to simulate
         power_outputs_stability = []  # To store power outputs over time
 
