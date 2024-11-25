@@ -24,26 +24,6 @@ def fuzzify(membership_functions, input_value):
             memberships[mf.name] = membership_result
     return memberships
 
-actual_voltage = 0.93  # Voltage in p.u.
-actual_soc = 0.24
-actual_energy = 0.227  # Energy level -> found with fuzzy controller with voltage and SOC
-
-voltage_memberships = fuzzify(flc_voltage.membership_functions, actual_voltage)
-soc_memberships = fuzzify(flc_SOC.membership_functions, actual_soc)
-
-energy_memberships = fuzzify(flc_energy_csc.membership_functions, actual_energy)
-
-print("Fuzzified Voltage Memberships:")
-for key, value in voltage_memberships.items():
-    print(f"  {key}: {value:.2f}")
-
-print("\nFuzzified SOC Memberships:")
-for key, value in soc_memberships.items():
-    print(f"  {key}: {value:.2f}")
-
-print("\nFuzzified Energy Memberships:")
-for key, value in energy_memberships.items():
-    print(f"  {key}: {value:.2f}")
 
 def calculate_output_components_and_power(input01, input02, flc_lookup_table, flc_target_object):
     output_components = {}
@@ -75,10 +55,31 @@ def calculate_output_components_and_power(input01, input02, flc_lookup_table, fl
     return output_components, power_output
 
 
+# Start with voltage and SOC
+actual_voltage = 0.93  # Voltage in p.u.
+actual_soc = 0.24
+
+voltage_memberships = fuzzify(flc_voltage.membership_functions, actual_voltage)
+soc_memberships = fuzzify(flc_SOC.membership_functions, actual_soc)
+
+print("Fuzzified Voltage Memberships:")
+for key, value in voltage_memberships.items():
+    print(f"  {key}: {value:.2f}")
+
+print("\nFuzzified SOC Memberships:")
+for key, value in soc_memberships.items():
+    print(f"  {key}: {value:.2f}")
+
 energy_csc, energy_desired = calculate_output_components_and_power(voltage_memberships, soc_memberships, fuzzy_lookup_csc(), flc_energy_csc)
 print(f"\nenergy desired (SOC): {energy_desired}")
 
+actual_energy = energy_desired  # Energy level -> found with fuzzy controller with voltage and SOC
+energy_memberships = fuzzify(flc_energy_csc.membership_functions, actual_energy)
+
+print("\nFuzzified Energy Memberships:")
+for key, value in energy_memberships.items():
+    print(f"  {key}: {value:.2f}")
+
 output_components, power_output = calculate_output_components_and_power(voltage_memberships, energy_memberships, fuzzy_lookup_v2g(), flc_energy_v2g)
 print(f"Defuzzified Output (COG): {power_output}")
-
 
