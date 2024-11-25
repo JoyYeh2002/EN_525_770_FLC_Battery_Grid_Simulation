@@ -41,50 +41,49 @@ if __name__ == "__main__":
     if not os.path.exists("outputs"):
         os.makedirs("outputs")
     # Define grid energy requirement
-    grid_energy_requirement = 0.4 # Example value, adjust as needed
-    time_steps = 100  # Number of time steps to simulate
-    power_outputs_stability = []  # To store power outputs over time
-
-    # Random starting point for EV scenario 1
-    plt.figure(figsize=(10, 5))
-    for initial_soc in [20, 30, 40, 50, 60, 70, 80]:
+    for grid_energy_requirement in [0.7, 0.8, 0.9, 0.92, 0.94, 0.95, 0.98, 0.99, 0.996]: # Example value, adjust as needed
         time_steps = 100  # Number of time steps to simulate
         power_outputs_stability = []  # To store power outputs over time
 
-        initial_soc = initial_soc / 100  # Convert SOC to percentage
-        initial_soc = round(initial_soc, 2)  # Round to 2 decimal places
-        print(f"Initial SOC: {initial_soc}")
-        print("\n")
-        ev_group01 = EV_group(SOC=initial_soc * 100, energy_rating=10, N=25)  # Scale SOC to percentage
-        ev_scenario03 = EV_scenario(ev_group01, ev_group01, ev_group01)
-        ev_scenario03.print_scenario()
+        # Random starting point for EV scenario 1
+        plt.figure(figsize=(10, 5))
+        for initial_soc in [20, 30, 40, 50, 60, 70, 80]:
+            time_steps = 100  # Number of time steps to simulate
+            power_outputs_stability = []  # To store power outputs over time
 
-        # Simulate over time
-        for t in range(time_steps):
-            actual_soc = round(initial_soc + (t * 0.01) % 0.1, 2) # Example SOC variation over time
-            voltage_memberships = fuzzify(flc_voltage.membership_functions, grid_energy_requirement)
-            soc_memberships = fuzzify(flc_SOC.membership_functions, actual_soc)
+            initial_soc = initial_soc / 100  # Convert SOC to percentage
+            initial_soc = round(initial_soc, 2)  # Round to 2 decimal places
+            print(f"Initial SOC: {initial_soc}")
+            print("\n")
+            ev_group01 = EV_group(SOC=initial_soc * 100, energy_rating=10, N=25)  # Scale SOC to percentage
+            ev_scenario03 = EV_scenario(ev_group01, ev_group01, ev_group01)
+            ev_scenario03.print_scenario()
+
+            # Simulate over time
+            for t in range(time_steps):
+                actual_soc = round(initial_soc + (t * 0.01) % 0.1, 2) # Example SOC variation over time
+                voltage_memberships = fuzzify(flc_voltage.membership_functions, grid_energy_requirement)
+                soc_memberships = fuzzify(flc_SOC.membership_functions, actual_soc)
+                
+                # Calculate power output based on current SOC and grid requirement
+                energy_csc, energy_desired = calculate_output_components_and_power(voltage_memberships, soc_memberships, fuzzy_lookup_csc(), flc_energy_csc)
+                energy_memberships = fuzzify(flc_energy_csc.membership_functions, energy_desired)
+                output_components, power_output = calculate_output_components_and_power(voltage_memberships, energy_memberships, fuzzy_lookup_v2g(), flc_energy_v2g)
+                power_outputs_stability.append(power_output)
             
-            # Calculate power output based on current SOC and grid requirement
-            energy_csc, energy_desired = calculate_output_components_and_power(voltage_memberships, soc_memberships, fuzzy_lookup_csc(), flc_energy_csc)
-            energy_memberships = fuzzify(flc_energy_csc.membership_functions, energy_desired)
-            output_components, power_output = calculate_output_components_and_power(voltage_memberships, energy_memberships, fuzzy_lookup_v2g(), flc_energy_v2g)
+            # Plot the power output for each initial_soc
+            plt.plot(range(time_steps), power_outputs_stability, label=f'Initial SOC: {initial_soc}')
             
-            power_outputs_stability.append(power_output)
-        
-        # Plot the power output for each initial_soc
-        plt.plot(range(time_steps), power_outputs_stability, label=f'Initial SOC: {initial_soc}')
-        
-        del time_steps, power_outputs_stability
+            del time_steps, power_outputs_stability
 
-    # Visualization of stability analysis
-    plt.title(f'Stability Analysis of Power Output Over Time: Grid Energy Requirement = {grid_energy_requirement} p.u.')
-    plt.xlabel('Time Steps')
-    plt.ylabel('Power Output (p.u.)')
-    plt.ylim(-1, 0)  # Set y-axis range to [-1, 1]
+        # Visualization of stability analysis
+        plt.title(f'Stability Analysis of Power Output Over Time: Grid Energy Requirement = {grid_energy_requirement} p.u.')
+        plt.xlabel('Time Steps')
+        plt.ylabel('Power Output (p.u.)')
+        plt.ylim(-1, 1)  # Set y-axis range to [-1, 1]
 
 
-    plt.legend()
-    plt.grid(True)
-    plt.savefig(f"outputs/energy_req_{grid_energy_requirement}_all.png")
-    print("SUCCESS: Stability analysis completed and saved as energy_req_0.4_all.png")
+        plt.legend()
+        plt.grid(True)
+        plt.savefig(f"outputs/energy_req_{grid_energy_requirement}_all.png")
+        print("SUCCESS: Stability analysis completed and saved as energy_req_0.4_all.png")
